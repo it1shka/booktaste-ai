@@ -1,0 +1,25 @@
+[project]
+name = "crawler"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "it1shka", email = "2tishbel@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "boto3>=1.44.7",
+    "pandas>=3.1.1",
+]
+
+[project.scripts]
+crawler = "crawler:main"
+
+[build-system]
+requires = ["uv_build>=0.13.9,<0.14.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.6",
+]

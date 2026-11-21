@@ -1,0 +1,36 @@
+name: booktaste-infra
+
+services:
+  storage-init:
+    image: alpine:3.24.4
+    user: root
+    volumes: [storage-data:/data]
+    command: chown -R 10001:10001 /data
+
+  storage:
+    image: rustfs/rustfs:1.0.6
+    networks: [storage]
+    depends_on:
+      storage-init:
+        condition: service_completed_successfully
+    volumes:
+      - storage-data:/data
+      - storage-logs:/var/log/rustfs/
+    environment:
+      RUSTFS_SECRET_KEY: ${S3_SECRET_KEY:?set S3_SECRET_KEY in .env}
+      RUSTFS_ACCESS_KEY: ${S3_ACCESS_KEY:-booktaste}
+      RUSTFS_ADDRESS: ":9000"
+      RUSTFS_CONSOLE_ENABLE: "true"
+      RUSTFS_CONSOLE_ADDRESS: ":9001"
+      RUSTFS_OBS_LOGGER_LEVEL: error
+      RUSTFS_OBS_LOG_DIRECTORY: "/var/log/rustfs/"
+    ports: ["127.0.0.1:9001:9001"]
+    restart: unless-stopped
+
+networks:
+  storage:
+    name: storage
+
+volumes:
+  storage-data:
+  storage-logs:
